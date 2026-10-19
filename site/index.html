@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ArcGIS StoryMaps — interactive story demo</title>
+    <meta name="description" content="Explore an ArcGIS StoryMaps script embed and an experimental X Player Card.">
+    <link rel="canonical" href="https://ssylvia.github.io/sm-script-tweet/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ssylvia.github.io/sm-script-tweet/">
+    <meta property="og:title" content="ArcGIS StoryMaps — interactive story demo">
+    <meta property="og:description" content="Open the demo to explore an interactive ArcGIS StoryMaps story.">
+    <meta property="og:image" content="https://ssylvia.github.io/sm-script-tweet/card.png">
+    <meta property="og:image:alt" content="ArcGIS StoryMaps interactive story demo">
+
+    <meta name="twitter:card" content="player">
+    <meta name="twitter:site" content="@ssylvia">
+    <meta name="twitter:title" content="ArcGIS StoryMaps — interactive story demo">
+    <meta name="twitter:description" content="An experimental interactive story embed. Open the demo if X does not display a player.">
+    <meta name="twitter:image" content="https://ssylvia.github.io/sm-script-tweet/card.png">
+    <meta name="twitter:image:alt" content="ArcGIS StoryMaps interactive story demo">
+    <meta name="twitter:player" content="https://ssylvia.github.io/sm-script-tweet/">
+    <meta name="twitter:player:width" content="960">
+    <meta name="twitter:player:height" content="600">
+
+    <style>
+      body { margin: 0; color: #172b3a; background: #fff; font-family: system-ui, sans-serif; }
+      header { padding: 0.75rem 1rem; border-bottom: 1px solid #d4dce2; }
+      h1 { margin: 0; font-size: 1.125rem; }
+      p { margin: 0.5rem 0 0; font-size: 0.875rem; }
+      a { color: #005e95; }
+      .storymaps-root { min-height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>ArcGIS StoryMaps script-embed demo</h1>
+      <p>Experimental X Player Card; interactive playback in X is not guaranteed.</p>
+      <p>Story not loading? <a href="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8">Open the story directly</a>.</p>
+    </header>
+    <main class="storymaps-root" aria-label="Interactive ArcGIS StoryMaps story"></main>
+    <noscript><p>JavaScript is required for the embedded story. Use the direct story link above.</p></noscript>
+    <script>
+      window.storyMapsEmbedConfig = {
+        storyId: "fffa28a9ea7447839ee9debfd9693bb8",
+        rootSelector: ".storymaps-root"
+      };
+    </script>
+    <script id="embed-script" src="https://storymaps.arcgis.com/embed/view"></script>
+  </body>
+</html>
