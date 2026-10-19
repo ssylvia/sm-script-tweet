@@ -1,13 +1,13 @@
 # sm-script-tweet
 
-Static ArcGIS StoryMaps script-embed demo with an **experimental** X Player Card.
+Static ArcGIS StoryMaps iframe-embed demo with an **experimental** X Player Card.
 
 Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
 
 ## Setup and deployment
 
-1. In the story's settings, enable **advanced embedding**, allow `ssylvia.github.io`,
-   and republish. The story and its dependent content must be publicly accessible.
+1. Ensure the story permits iframe embedding.
+   The story and its dependent content must be publicly accessible.
    This repository cannot change those settings.
 2. In this repository's **Settings → Pages → Build and deployment**, select
    **GitHub Actions** as the source.
@@ -16,9 +16,18 @@ Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
    Allow the deployment branch in the `github-pages` environment if protection
    rules are configured.
 
-The embed uses Esri's [script-embed configuration](https://github.com/Esri/storymaps-developer-samples/tree/main/embed):
-`window.storyMapsEmbedConfig` is defined before the presentation-engine script.
-The configured story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
+The embed uses an iframe with `autoplay=true` in the story URL and autoplay
+permission enabled. Browser autoplay policies still apply.
+The iframe fills the page's full width and height, including when loaded inside
+the declared 960 × 600 X Player Card.
+The default story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
+
+To load another story, add `?storyId=<32-character-story-id>` to the demo URL.
+For example: https://ssylvia.github.io/sm-script-tweet/?storyId=fffa28a9ea7447839ee9debfd9693bb8.
+Only 32-character hexadecimal story IDs are accepted; missing, empty, or invalid
+values keep the default story. Autoplay remains enabled for the selected story.
+Selecting a story requires JavaScript and does not change the hardcoded card
+metadata or preview image.
 
 To preview locally, run:
 
@@ -26,8 +35,7 @@ To preview locally, run:
 python3 -m http.server 8000 --directory /home/runner/work/sm-script-tweet/sm-script-tweet/site
 ```
 
-Open http://localhost:8000/. Allow the local test domain in the story's advanced
-embedding settings as well. There is no existing test/build/lint infrastructure.
+Open http://localhost:8000/. There is no existing test/build/lint infrastructure.
 
 ## X/Twitter Player Card research
 
@@ -40,7 +48,7 @@ intended X account before sharing.
 
 **This is a feasibility experiment, not a supported way to run arbitrary websites
 in X.** X's [Player Card documentation](https://developer.x.com/en/docs/x-for-websites/cards/overview/player-card)
-describes audio/video players; a script-embedded StoryMap is not an audio/video
+describes audio/video players; an iframe-embedded StoryMap is not an audio/video
 player. Metadata alone does not guarantee eligibility, approval, or interactive
 rendering. Do not add a fake `twitter:player:stream`: that field is for actual
 media streams. Current X documentation and the live story could not be fetched
@@ -60,5 +68,5 @@ After deployment:
   `summary_large_image` and remove the three `twitter:player*` tags. Share the
   image/link card so readers open the live story on this site instead.
 
-The direct story link remains visible if scripts are disabled, the embed is
-blocked, or the story's allowed-domain settings have not been configured.
+With JavaScript disabled, the iframe loads the default story and a direct link
+to that story is displayed.
