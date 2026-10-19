@@ -18,8 +18,16 @@ Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
 
 The embed uses an iframe with `autoplay=true` in the story URL and autoplay
 permission enabled. Browser autoplay policies still apply.
-Its responsive 960:600 aspect ratio matches the declared X Player Card dimensions.
-The configured story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
+The iframe fills the page's full width and height, including when loaded inside
+the declared 960 × 600 X Player Card.
+The default story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
+
+To load another story, add `?storyId=<32-character-story-id>` to the demo URL.
+For example: https://ssylvia.github.io/sm-script-tweet/?storyId=fffa28a9ea7447839ee9debfd9693bb8.
+Only 32-character hexadecimal story IDs are accepted; missing, empty, or invalid
+values keep the default story. Autoplay remains enabled for the selected story.
+Selecting a story requires JavaScript and does not change the hardcoded card
+metadata or preview image.
 
 To preview locally, run:
 
@@ -60,5 +68,5 @@ After deployment:
   `summary_large_image` and remove the three `twitter:player*` tags. Share the
   image/link card so readers open the live story on this site instead.
 
-The direct story link remains visible if scripts are disabled or the embed is
-blocked.
+With JavaScript disabled, the iframe loads the default story and a direct link
+to that story is displayed.

@@ -25,20 +25,14 @@
     <meta name="twitter:player:height" content="600">
 
     <style>
+      html, body, main { width: 100%; height: 100%; }
       body { margin: 0; color: #172b3a; background: #fff; font-family: system-ui, sans-serif; }
-      header { padding: 0.75rem 1rem; border-bottom: 1px solid #d4dce2; }
-      h1 { margin: 0; font-size: 1.125rem; }
-      p { margin: 0.5rem 0 0; font-size: 0.875rem; }
+      noscript p { position: absolute; bottom: 0; margin: 0; padding: 0.75rem; background: #fff; }
       a { color: #005e95; }
-      .storymaps-frame { display: block; width: 100%; aspect-ratio: 960 / 600; border: 0; }
+      .storymaps-frame { display: block; width: 100%; height: 100%; border: 0; }
     </style>
   </head>
   <body>
-    <header>
-      <h1>ArcGIS StoryMaps iframe-embed demo</h1>
-      <p>Experimental X Player Card; interactive playback in X is not guaranteed.</p>
-      <p>Story not loading? <a href="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8">Open the story directly</a>.</p>
-    </header>
     <main aria-label="Interactive ArcGIS StoryMaps story">
       <iframe
         class="storymaps-frame"
@@ -48,5 +42,17 @@
         allowfullscreen
       ></iframe>
     </main>
+    <noscript><p>JavaScript is disabled; showing the default story. <a href="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8">Open the story directly</a>.</p></noscript>
+    <script>
+      const storyId = new URLSearchParams(window.location.search).get("storyId");
+      if (storyId && /^[a-f0-9]{32}$/i.test(storyId)) {
+        const frame = document.querySelector(".storymaps-frame");
+        const storyUrl = new URL(frame.src);
+        storyUrl.pathname = "/stories/" + storyId;
+        if (frame.src !== storyUrl.href) {
+          frame.src = storyUrl.href;
+        }
+      }
+    </script>
   </body>
 </html>
