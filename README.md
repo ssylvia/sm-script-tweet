@@ -6,7 +6,9 @@ website behind X's play button; in-feed rendering is subject to X's support and
 approval, not guaranteed by these tags. The interactive experience also opens
 directly on this site.
 
-Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
+Story demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/story.html.
+The former `index.html` has been renamed to `story.html`; share the explicit
+page URLs below rather than the site root.
 
 ## Setup and deployment
 
@@ -20,43 +22,35 @@ Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
    Allow the deployment branch in the `github-pages` environment if protection
    rules are configured.
 
-The embed uses an iframe with `autoplay=true` in the story URL and autoplay
+Each embed uses an iframe with `autoplay=true` in the item URL and autoplay
 permission enabled. Browser autoplay policies still apply.
 The iframe fills the available viewport without enforcing an aspect ratio in CSS.
-The default story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
+The default story is https://storymaps.arcgis.com/stories/2eae918ca40a4bd7a55390bba4735cdb.
 
-To load another public StoryMaps item, add `?itemId=<32-character-item-id>` to the
-demo URL. For example:
-https://ssylvia.github.io/sm-script-tweet/?itemId=fffa28a9ea7447839ee9debfd9693bb8.
-The existing `?storyId=` parameter also accepts any supported StoryMaps item ID;
-`itemId` takes precedence when both parameters are present.
-Only 32-character hexadecimal IDs are accepted; missing, empty, or invalid values
-select the default story.
+Each item type has a separate static HTML page:
 
-Before loading the iframe, the browser anonymously fetches item details from
-`https://www.arcgis.com/sharing/rest/content/items/<item-id>?f=json` and checks
-that the item is public. Its `typeKeywords` determine the iframe route:
-
-| Type keyword | Route |
+| Demo page | Embedded item |
 | --- | --- |
-| `storymapcollection` | `/collections/<item-id>` |
-| `storymapbriefing` | `/briefings/<item-id>` |
-| `storymapframe` | `/frames/<item-id>` |
-| None of the above | `/stories/<item-id>` |
+| [story.html](https://ssylvia.github.io/sm-script-tweet/story.html) | https://storymaps.arcgis.com/stories/2eae918ca40a4bd7a55390bba4735cdb |
+| [frames.html](https://ssylvia.github.io/sm-script-tweet/frames.html) | https://storymaps.arcgis.com/frames/31e55f3c2ec0408cadf83942e6a0675d |
+| [collection.html](https://ssylvia.github.io/sm-script-tweet/collection.html) | https://storymaps.arcgis.com/collections/997b82273a12417798362d431897e1dc |
+| [briefing.html](https://ssylvia.github.io/sm-script-tweet/briefing.html) | https://storymaps.arcgis.com/briefings/3a77266dfb2b4f468e158b15ab70a309 |
 
-If lookup fails, times out after 10 seconds, or returns a non-public item, the
-default story is displayed with an explanatory message. Autoplay remains enabled.
-Selecting an item requires JavaScript and does not change the hardcoded card
-metadata or preview image.
+The iframe is present in the initial HTML and loads immediately, with or without
+JavaScript. There is no ArcGIS item lookup, type detection, timeout, or fallback
+before embedding. The former `?itemId=` and `?storyId=` overrides are no longer
+used: each page always embeds its fixed item, keeping its static preview metadata
+consistent with the item type.
 
 ### Dynamic metadata and Next.js
 
 [GitHub Pages is static hosting](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
 and cannot run Next.js server-side rendering (SSR). A Next.js static export would
 not provide request-time metadata for arbitrary item IDs, so this demo remains a
-basic static site. Dynamic social metadata would require SSR-capable hosting or
-separate HTML pages generated at build time for known items; client-side updates
-are not a reliable substitute for social crawlers.
+basic static site with four separate HTML pages for known items. Dynamic social
+metadata for arbitrary items would require SSR-capable hosting or additional
+static HTML pages; client-side updates are not a reliable substitute for social
+crawlers.
 
 To preview locally, run:
 
@@ -64,7 +58,9 @@ To preview locally, run:
 python3 -m http.server 8000 --directory /home/runner/work/sm-script-tweet/sm-script-tweet/site
 ```
 
-Open http://localhost:8000/. There is no existing test/build/lint infrastructure.
+Open http://localhost:8000/story.html, http://localhost:8000/frames.html,
+http://localhost:8000/collection.html, or http://localhost:8000/briefing.html.
+There is no existing test/build/lint infrastructure.
 
 ## URL-only sharing research
 
@@ -225,14 +221,14 @@ not a claim of tested current PDF-link rendering.
 
 ### Item-specific previews
 
-Every query string currently receives the same static HTML, image and root
-canonical/OG URL. A share intent does not change this. In particular,
-`?itemId=…` and `?storyId=…` select the browser's interactive item only; they
-must not be advertised as producing item-specific previews.
+The four demo pages each have their own static title, description, canonical URL,
+`og:url`, and `twitter:player` URL matching that page and its embedded item type.
+They share the existing demo artwork in `card.png`, not item-specific thumbnails.
+Query strings do not change the embedded item or its metadata.
 
-For distinct item previews on GitHub Pages, publish distinct generated HTML
-paths with their own title, description, poster, canonical URL and `og:url`.
-Otherwise move metadata generation to request-time server/edge hosting and
+For additional distinct item previews on GitHub Pages, publish separate HTML
+paths with matching metadata and, if desired, item-specific posters.
+Alternatively move metadata generation to request-time server/edge hosting and
 validate the item before returning HTML. JavaScript mutations or
 `?twitter:card=player` parameters cannot change crawler-readable metadata on
 this static host.
@@ -263,14 +259,14 @@ intended X account before sharing.
 
 ### Deployment and verification
 
-- Deploy `site/` and check that the page, `card.png`, and story load anonymously
+- Deploy `site/` and check that all four HTML pages, `card.png`, and embedded items load anonymously
   over HTTPS with successful responses and correct HTML/PNG content types.
   Do not put bot challenges, cookies, authentication, or crawler exclusions in
   front of the page or its assets.
 - Inspect **View Source**, not just the browser's live DOM: the metadata must
   exist before JavaScript executes. If hosting under another account,
   repository, or custom domain, update every absolute page/image URL in
-  `site/index.html`.
+  `site/story.html`, `site/frames.html`, `site/collection.html`, and `site/briefing.html`.
 - Use the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
   and [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/), then
   paste the deployed URL into the actual target composer/chat. Test X web/mobile
@@ -283,5 +279,4 @@ intended X account before sharing.
   do not demonstrate that any social platform has crawled or approved the URL;
   real-account posting and playback have not been verified here.
 
-With JavaScript disabled, the iframe loads the default story and a direct link
-to that story is displayed.
+With JavaScript disabled, each page still immediately loads its fixed item's iframe.
