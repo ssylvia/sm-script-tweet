@@ -1,8 +1,10 @@
 # sm-script-tweet
 
-Static ArcGIS StoryMaps iframe-embed demo with crawler-readable Open Graph and
-X large-image link previews. The interactive experience opens on this site,
-not inside a social feed.
+Static ArcGIS StoryMaps iframe-embed demo with crawler-readable Open Graph image
+previews and an experimental X Player Card. The player requests the interactive
+website behind X's play button; in-feed rendering is subject to X's support and
+approval, not guaranteed by these tags. The interactive experience also opens
+directly on this site.
 
 Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
 
@@ -111,7 +113,7 @@ target with the assets in this repository, not a guarantee of rendering.
 | **TikTok** | No generic external-URL-to-feed-preview mechanism was verified. | Hosting an MP4 and adding OG tags does not publish a TikTok. Native Share Kit takes photo-library media, not arbitrary HTML; profile/message links are surface-dependent. [Verified official sharing implementation](https://github.com/tiktok/tiktok-opensdk-ios/blob/main/Sources/TikTokOpenShareSDK/Public/TikTokShareRequest.swift). |
 | **Snapchat** | URL sharing on supported surfaces; a controlled OG card for this app is unverified. | Do not promise a Snap, autoplaying video, or interactive iframe from pasting a URL. Native media/link attachment is different. [Creative Kit for Web](https://developers.snap.com/snap-kit/creative-kit/Tutorials/web) is an integration lead, not a verified metadata-only contract; its current requirements were inaccessible. |
 | **LinkedIn** | **4** — image/title/link card. | **No automatic native PDF carousel from a pasted URL is established.** Upload a PDF/document in the composer for that format; native video also uses a separate workflow. Self-hosted MP4 metadata is not a guaranteed LinkedIn player. [Post Inspector](https://www.linkedin.com/post-inspector/) (reference not retrieved). |
-| **X** | **4** — `summary_large_image`, with text and a link back. | **2** is a conditional real-audio/video Player Card experiment. A player iframe is not permission to run arbitrary StoryMaps HTML; current Player Card acceptance/approval and autoplay are unverified. [Official video-player sample](https://github.com/xdevplatform/cards-player-samples/blob/main/player/container.html). |
+| **X** | Experimental **3** requested via `twitter:card=player`, pointing to this interactive site. | Arbitrary StoryMaps HTML behind a play button is not verified as supported. Current Player Card acceptance/approval and autoplay are unverified; open the page directly if no player appears. A real-audio/video player is a separate option. [Official video-player sample](https://github.com/xdevplatform/cards-player-samples/blob/main/player/container.html). |
 | **Kwai** | URL/manual sharing only; a custom website-card contract was not verified. | Do not promise external-URL-to-video publication, an OG-controlled feed preview, or arbitrary HTML playback. No primary preview contract was retrieved from [Kwai](https://www.kwai.com/); Chinese Kuaishou integrations must not be assumed to apply to international Kwai. |
 | **Discord** | Target **4** — a custom-image link embed, where user/channel settings permit previews. | Rich video embeds may be possible, but arbitrary-domain MP4 recognition, exact metadata selection and interactive HTML were not verified here. A bot-created embed is different. [Auto-embed help](https://support.discord.com/hc/en-us/articles/206342858--How-do-I-disable-auto-embed) is an official lead whose current text was inaccessible. |
 | **Pinterest** | Target **4** — an image-backed Pin linking to the app through the user-facing Pin creation flow. | Supply/select the actual image and destination; OG tags do not automatically create video Pins or arbitrary iframes. [Save Button](https://developers.pinterest.com/docs/add-ons/save-button/) and [Rich Pins](https://help.pinterest.com/en/business/article/rich-pins) are official leads; current parameters/eligibility were not verified. |
@@ -241,18 +243,21 @@ The initial HTML contains the title, description, canonical URL, Open Graph
 website metadata, site name, locale, and an absolute HTTPS PNG URL. Structured
 image metadata declares its actual MIME type and dimensions: `image/png`,
 1200 × 630 (about 315 KiB). X receives explicit title, description, image, image
-alt text, and `twitter:card=summary_large_image`.
+alt text, and `twitter:card=player`. The HTTPS `twitter:player` URL points to this
+site's full interactive embed, with declared player dimensions of 640 × 640.
+These card dimensions do not enforce an aspect ratio on the website's iframe.
 
 These are descriptions for a crawler, not instructions that force a particular
 feed layout. Platforms may omit the description, crop the image, suppress the
 preview, or retain cached metadata. The shared page URL leads back to the
 interactive app; share the page, not `card.png` or a future raw MP4.
 
-The previous `twitter:card=player` declaration pointed at an arbitrary StoryMaps
-iframe rather than an audio/video player. It has been replaced with the supported
-image-card fallback; neither `twitter:player*` nor `og:video*` advertises media
-that this repository does not supply. The existing artwork still labels the
-original Player Card experiment; that label is not a claim of X player support.
+The original Player Card experiment has been restored instead of the X
+large-image card. It requests the complete StoryMaps website rather than an
+audio/video player; X may reject or suppress it. A play button and interactive
+in-feed playback cannot be guaranteed. The Open Graph image preview is unchanged
+for other consumers, and no `og:video*` or direct media stream is advertised.
+The artwork's Player Card label is not a claim of X player support.
 The hardcoded `twitter:site` attribution is `@ssylvia`; confirm this is the
 intended X account before sharing.
 
