@@ -21,38 +21,92 @@
     <meta name="twitter:image" content="https://ssylvia.github.io/sm-script-tweet/card.png">
     <meta name="twitter:image:alt" content="ArcGIS StoryMaps interactive story demo">
     <meta name="twitter:player" content="https://ssylvia.github.io/sm-script-tweet/">
-    <meta name="twitter:player:width" content="960">
-    <meta name="twitter:player:height" content="600">
+    <meta name="twitter:player:width" content="360">
+    <meta name="twitter:player:height" content="640">
 
     <style>
-      html, body, main { width: 100%; height: 100%; }
-      body { margin: 0; color: #172b3a; background: #fff; font-family: system-ui, sans-serif; }
-      noscript p { position: absolute; bottom: 0; margin: 0; padding: 0.75rem; background: #fff; }
+      html, body { width: 100%; min-height: 100%; }
+      body { margin: 0; color: #172b3a; background: #fff; font-family: system-ui, sans-serif; display: grid; place-items: center; min-height: 100vh; }
+      main { position: relative; width: min(100vw, 56.25vh); aspect-ratio: 9 / 16; }
+      noscript p, #embed-status { position: absolute; bottom: 0; margin: 0; padding: 0.75rem; background: #fff; }
       a { color: #005e95; }
       .storymaps-frame { display: block; width: 100%; height: 100%; border: 0; }
     </style>
   </head>
   <body>
-    <main aria-label="Interactive ArcGIS StoryMaps story">
-      <iframe
-        class="storymaps-frame"
-        src="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8?autoplay=true"
-        title="Interactive ArcGIS StoryMaps story"
-        allow="autoplay"
-        allowfullscreen
-      ></iframe>
+    <main aria-label="Interactive ArcGIS StoryMaps item">
+      <p id="embed-status" role="status" hidden></p>
+      <noscript>
+        <iframe
+          class="storymaps-frame"
+          src="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8?autoplay=true"
+          title="Interactive ArcGIS StoryMaps story"
+          allow="autoplay"
+          allowfullscreen
+        ></iframe>
+        <p>JavaScript is disabled; showing the default story. <a href="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8">Open the story directly</a>.</p>
+      </noscript>
     </main>
-    <noscript><p>JavaScript is disabled; showing the default story. <a href="https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8">Open the story directly</a>.</p></noscript>
     <script>
-      const storyId = new URLSearchParams(window.location.search).get("storyId");
-      if (storyId && /^[a-f0-9]{32}$/i.test(storyId)) {
-        const frame = document.querySelector(".storymaps-frame");
-        const storyUrl = new URL(frame.src);
-        storyUrl.pathname = "/stories/" + storyId;
-        if (frame.src !== storyUrl.href) {
-          frame.src = storyUrl.href;
+      const STORYMAP_COLLECTION_TYPEKEYWORD = "storymapcollection";
+      const STORYMAP_BRIEFING_TYPEKEYWORD = "storymapbriefing";
+      const STORYMAP_FRAME_TYPEKEYWORD = "storymapframe";
+      const defaultStoryId = "fffa28a9ea7447839ee9debfd9693bb8";
+      const params = new URLSearchParams(window.location.search);
+      const requestedItemId = params.get("itemId") ?? params.get("storyId");
+      const itemId = /^[a-f0-9]{32}$/i.test(requestedItemId || "")
+        ? requestedItemId.toLowerCase()
+        : defaultStoryId;
+
+      async function loadItem() {
+        const status = document.querySelector("#embed-status");
+        status.textContent = "Loading ArcGIS StoryMaps item…";
+        status.hidden = false;
+        let route = "stories";
+        let label = "story";
+        let resolvedItemId = defaultStoryId;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+
+        try {
+          const response = await fetch(
+            "https://www.arcgis.com/sharing/rest/content/items/" + itemId + "?f=json",
+            { credentials: "omit", signal: controller.signal }
+          );
+          if (!response.ok) throw new Error("Item lookup failed");
+          const item = await response.json();
+          if (!item || item.error || item.access !== "public") {
+            throw new Error("Item is not publicly accessible");
+          }
+          const keywords = Array.isArray(item.typeKeywords) ? item.typeKeywords : [];
+          if (keywords.includes(STORYMAP_COLLECTION_TYPEKEYWORD)) {
+            route = "collections";
+            label = "collection";
+          } else if (keywords.includes(STORYMAP_BRIEFING_TYPEKEYWORD)) {
+            route = "briefings";
+            label = "briefing";
+          } else if (keywords.includes(STORYMAP_FRAME_TYPEKEYWORD)) {
+            route = "frames";
+            label = "frame";
+          }
+          resolvedItemId = itemId;
+          status.hidden = true;
+        } catch {
+          status.textContent = "Unable to load the public item. Showing the default story.";
+        } finally {
+          clearTimeout(timeout);
         }
+
+        const frame = document.createElement("iframe");
+        frame.className = "storymaps-frame";
+        frame.src = "https://storymaps.arcgis.com/" + route + "/" + resolvedItemId + "?play=true";
+        frame.title = "Interactive ArcGIS StoryMaps " + label;
+        frame.allow = "autoplay";
+        frame.allowFullscreen = true;
+        document.querySelector("main").append(frame);
       }
+
+      loadItem();
     </script>
   </body>
 </html>
