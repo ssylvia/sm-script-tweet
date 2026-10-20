@@ -20,9 +20,7 @@ Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
 
 The embed uses an iframe with `autoplay=true` in the story URL and autoplay
 permission enabled. Browser autoplay policies still apply.
-The iframe is centered in a tall mobile frame with a **9:16 width-to-height**
-aspect ratio (16 units tall by 9 units wide). It scales to fit the viewport,
-without depending on a social platform's player dimensions.
+The iframe fills the available viewport without enforcing an aspect ratio in CSS.
 The default story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
 
 To load another public StoryMaps item, add `?itemId=<32-character-item-id>` to the
