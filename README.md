@@ -200,10 +200,10 @@ allowlist requirement is claimed. Test the
 before treating preference **2** as available. A raw MP4 link may open a media
 file instead of linking back to the app.
 
-No MP4 or genuine video-player asset was supplied in this repository, so the
-deployed HTML deliberately does not advertise imaginary video URLs, wrong
-dimensions, or an HTML iframe as `video/mp4`. Hosting a real preview later can
-enable a separate video experiment; it cannot force every platform to play it.
+The separate `test-meta.html` experiment below advertises the supplied sample
+MP4, with its actual dimensions and MIME type; it does not label an HTML iframe
+as `video/mp4`. The original demo pages remain unchanged. A real preview asset
+cannot force every platform to play it.
 Native video uploads with text linking back to the app are another option,
 but are not the pasted-URL/meta-tag workflow.
 
@@ -246,7 +246,7 @@ These card dimensions do not enforce an aspect ratio on the website's iframe.
 These are descriptions for a crawler, not instructions that force a particular
 feed layout. Platforms may omit the description, crop the image, suppress the
 preview, or retain cached metadata. The shared page URL leads back to the
-interactive app; share the page, not `card.png` or a future raw MP4.
+interactive app; share the page, not `card.png` or the raw MP4.
 
 The original Player Card experiment has been restored instead of the X
 large-image card. It requests the complete StoryMaps website rather than an
@@ -257,16 +257,39 @@ The artwork's Player Card label is not a claim of X player support.
 The hardcoded `twitter:site` attribution is `@ssylvia`; confirm this is the
 intended X account before sharing.
 
+### Video metadata test page
+
+Share https://ssylvia.github.io/sm-script-tweet/test-meta.html after deployment
+(locally, open http://localhost:8000/test-meta.html). It duplicates `story.html`'s
+interactive embed and styling, but uses its own canonical URL and `og:url`.
+The original demo pages' metadata is unchanged.
+
+- Open Graph advertises the direct, public HTTPS
+  [sample MP4](https://ssylvia.github.io/sm-script-tweet/Fall%20-%2028746.mp4)
+  as `video/mp4`, with its actual 4096 × 2160 dimensions. Use the hosted media
+  URL, not GitHub's `/blob/` HTML viewer.
+- X retains `twitter:card=player`, the existing `story.html` iframe-player URL,
+  and its 640 × 640 dimensions. The optional `twitter:player:stream` advertises
+  the same MP4 with `twitter:player:stream:content_type=video/mp4` for clients
+  that support direct streams. X may still reject the interactive iframe.
+- The existing `card.png`, title, description, and page URL remain available
+  for image/link previews when a consumer ignores video metadata. Playback,
+  clickable attribution, and fallback layout depend on the platform; these
+  tags do not guarantee inline video on X, Slack, Messages, Discord, Telegram,
+  LinkedIn, or Facebook. The sample clip is test footage, not a StoryMaps recording.
+
 ### Deployment and verification
 
-- Deploy `site/` and check that all four HTML pages, `card.png`, and embedded items load anonymously
-  over HTTPS with successful responses and correct HTML/PNG content types.
+- Deploy `site/` and check that all four original HTML pages, `test-meta.html`,
+  `card.png`, the sample MP4, and embedded items load anonymously over HTTPS
+  with successful responses and correct HTML/PNG/MP4 content types.
   Do not put bot challenges, cookies, authentication, or crawler exclusions in
   front of the page or its assets.
 - Inspect **View Source**, not just the browser's live DOM: the metadata must
   exist before JavaScript executes. If hosting under another account,
   repository, or custom domain, update every absolute page/image URL in
-  `site/story.html`, `site/frames.html`, `site/collection.html`, and `site/briefing.html`.
+  `site/story.html`, `site/frames.html`, `site/collection.html`, `site/briefing.html`,
+  and `site/test-meta.html` (including its video and player URLs).
 - Use the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
   and [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/), then
   paste the deployed URL into the actual target composer/chat. Test X web/mobile
