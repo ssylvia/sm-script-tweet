@@ -1,6 +1,8 @@
 # sm-script-tweet
 
-Static ArcGIS StoryMaps iframe-embed demo with an **experimental** X Player Card.
+Static ArcGIS StoryMaps iframe-embed demo with crawler-readable Open Graph and
+X large-image link previews. The interactive experience opens on this site,
+not inside a social feed.
 
 Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
 
@@ -20,7 +22,7 @@ The embed uses an iframe with `autoplay=true` in the story URL and autoplay
 permission enabled. Browser autoplay policies still apply.
 The iframe is centered in a tall mobile frame with a **9:16 width-to-height**
 aspect ratio (16 units tall by 9 units wide). It scales to fit the viewport,
-including when loaded inside the declared 360 × 640 X Player Card.
+without depending on a social platform's player dimensions.
 The default story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
 
 To load another public StoryMaps item, add `?itemId=<32-character-item-id>` to the
@@ -64,36 +66,48 @@ python3 -m http.server 8000 --directory /home/runner/work/sm-script-tweet/sm-scr
 
 Open http://localhost:8000/. There is no existing test/build/lint infrastructure.
 
-## X/Twitter Player Card research
+## Implemented preview metadata
 
-The initial HTML hardcodes the title, description, canonical URL, Open Graph
-preview, PNG image, and `twitter:card=player` metadata. `twitter:player` points to
-the HTTPS demo itself, with a declared 360 × 640 player. There is no iframe
-pointing back to the demo and no client-side metadata generation.
+The initial HTML contains the title, description, canonical URL, Open Graph
+website metadata, site name, locale, and an absolute HTTPS PNG URL. Structured
+image metadata declares its actual MIME type and dimensions: `image/png`,
+1200 × 630 (about 315 KiB). X receives explicit title, description, image, image
+alt text, and `twitter:card=summary_large_image`.
+
+These are descriptions for a crawler, not instructions that force a particular
+feed layout. Platforms may omit the description, crop the image, suppress the
+preview, or retain cached metadata. The shared page URL leads back to the
+interactive app; share the page, not `card.png` or a future raw MP4.
+
+The previous `twitter:card=player` declaration pointed at an arbitrary StoryMaps
+iframe rather than an audio/video player. It has been replaced with the supported
+image-card fallback; neither `twitter:player*` nor `og:video*` advertises media
+that this repository does not supply. The existing artwork still labels the
+original Player Card experiment; that label is not a claim of X player support.
 The hardcoded `twitter:site` attribution is `@ssylvia`; confirm this is the
 intended X account before sharing.
 
-**This is a feasibility experiment, not a supported way to run arbitrary websites
-in X.** X's [Player Card documentation](https://developer.x.com/en/docs/x-for-websites/cards/overview/player-card)
-describes audio/video players; an iframe-embedded StoryMap is not an audio/video
-player. Metadata alone does not guarantee eligibility, approval, or interactive
-rendering. Do not add a fake `twitter:player:stream`: that field is for actual
-media streams. Current X documentation and the live story could not be fetched
-from the implementation environment, so current approval rules and live playback
-remain unverified.
+### Deployment and verification
 
-After deployment:
-
-- Check that the page, `card.png`, and story load anonymously over HTTPS.
-- Inspect **View Source** to confirm the hardcoded metadata is present without
-  JavaScript. If hosting under another account, repository, or custom domain,
-  update every absolute page/image URL in `site/index.html`.
-- Submit the demo URL to the [Card Validator](https://cards-dev.twitter.com/validator)
-  if available, and test a real post on X web/mobile. A validator response alone
-  does not prove interactive playback works; X can cache previous metadata.
-- If X rejects the interactive player, change `twitter:card` to
-  `summary_large_image` and remove the three `twitter:player*` tags. Share the
-  image/link card so readers open the live story on this site instead.
+- Deploy `site/` and check that the page, `card.png`, and story load anonymously
+  over HTTPS with successful responses and correct HTML/PNG content types.
+  Do not put bot challenges, cookies, authentication, or crawler exclusions in
+  front of the page or its assets.
+- Inspect **View Source**, not just the browser's live DOM: the metadata must
+  exist before JavaScript executes. If hosting under another account,
+  repository, or custom domain, update every absolute page/image URL in
+  `site/index.html`.
+- Use the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)
+  and [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/), then
+  paste the deployed URL into the actual target composer/chat. Test X web/mobile
+  too; the [legacy Card Validator](https://cards-dev.twitter.com/validator), if
+  available, is not proof of feed rendering.
+- Previews depend on client, surface, privacy settings, and cache. Re-scrape
+  where supported; a new versioned image URL can help when artwork changes.
+  A query parameter alone does not guarantee cache invalidation.
+- This repository has no build, lint, or test suite. Local source/asset checks
+  do not demonstrate that any social platform has crawled or approved the URL;
+  real-account posting and playback have not been verified here.
 
 With JavaScript disabled, the iframe loads the default story and a direct link
 to that story is displayed.
