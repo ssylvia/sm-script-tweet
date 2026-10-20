@@ -18,9 +18,9 @@ Demo URL after deployment: https://ssylvia.github.io/sm-script-tweet/
 
 The embed uses an iframe with `autoplay=true` in the story URL and autoplay
 permission enabled. Browser autoplay policies still apply.
-The iframe is centered in a tall mobile frame with a **9:16 width-to-height**
-aspect ratio (16 units tall by 9 units wide). It scales to fit the viewport,
-including when loaded inside the declared 360 × 640 X Player Card.
+The iframe fills the available viewport without enforcing an aspect ratio in CSS.
+The X Player Card meta tags recommend a 640 × 640 (1:1) player; they do not
+constrain the page layout.
 The default story is https://storymaps.arcgis.com/stories/fffa28a9ea7447839ee9debfd9693bb8.
 
 To load another public StoryMaps item, add `?itemId=<32-character-item-id>` to the
@@ -68,7 +68,7 @@ Open http://localhost:8000/. There is no existing test/build/lint infrastructure
 
 The initial HTML hardcodes the title, description, canonical URL, Open Graph
 preview, PNG image, and `twitter:card=player` metadata. `twitter:player` points to
-the HTTPS demo itself, with a declared 360 × 640 player. There is no iframe
+the HTTPS demo itself, with a recommended 640 × 640 player. There is no iframe
 pointing back to the demo and no client-side metadata generation.
 The hardcoded `twitter:site` attribution is `@ssylvia`; confirm this is the
 intended X account before sharing.
